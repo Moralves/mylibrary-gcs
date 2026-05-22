@@ -1,0 +1,10 @@
+.app-container h1 {
+  margin: 0 0 8px;
+  font-size: 32px;
+}
+
+.app-container p {
+  margin: 0;
+  font-size: 16px;
+  color: #4a4a4a;
+}
