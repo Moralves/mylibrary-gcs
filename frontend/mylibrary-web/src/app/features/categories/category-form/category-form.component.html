@@ -1,0 +1,19 @@
+<form class="category-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-field">
+    <label for="category-name">Nome</label>
+    <input id="category-name" type="text" formControlName="name" placeholder="Ex: Ficção científica" [class.invalid]="isFieldInvalid('name')" autocomplete="off" />
+    <span class="error" *ngIf="isFieldInvalid('name')">
+      <span *ngIf="form.get('name')?.hasError('required')">O nome é obrigatório.</span>
+      <span *ngIf="form.get('name')?.hasError('whitespace')">O nome não pode ser apenas espaços.</span>
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="category-description">Descrição</label>
+    <textarea id="category-description" formControlName="description" rows="3" placeholder="Opcional"></textarea>
+  </div>
+
+  <button type="submit" [disabled]="form.invalid || isSubmitting">
+    {{ isSubmitting ? 'Cadastrando...' : 'Cadastrar' }}
+  </button>
+</form>
