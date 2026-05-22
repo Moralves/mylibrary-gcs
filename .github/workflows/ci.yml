@@ -1,0 +1,53 @@
+name: CI - MyLibrary
+
+on:
+  push:
+    branches:
+      - develop
+      - 'feature/**'
+      - 'ci/**'
+      - 'hotfix/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-backend:
+    name: Build Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build backend
+        run: cd backend/mylibrary-api && mvn clean verify --no-transfer-progress
+
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/mylibrary-web/package-lock.json
+
+      - name: Install frontend dependencies
+        run: cd frontend/mylibrary-web && npm ci
+
+      - name: Build frontend
+        run: cd frontend/mylibrary-web && npm run build
