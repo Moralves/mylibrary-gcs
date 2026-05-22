@@ -33,7 +33,12 @@ jobs:
 
   build-frontend:
     name: Build Frontend
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: frontend/mylibrary-web
 
     steps:
       - name: Checkout repository
@@ -42,12 +47,20 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.12.0'
           cache: 'npm'
           cache-dependency-path: frontend/mylibrary-web/package-lock.json
 
+      - name: Align npm version with frontend lockfile
+        run: npm install --global npm@11.5.2
+
+      - name: Show frontend tool versions
+        run: |
+          node --version
+          npm --version
+
       - name: Install frontend dependencies
-        run: cd frontend/mylibrary-web && npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Build frontend
-        run: cd frontend/mylibrary-web && npm run build
+        run: npm run build

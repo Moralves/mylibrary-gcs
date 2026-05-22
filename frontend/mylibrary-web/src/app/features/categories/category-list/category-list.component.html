@@ -1,0 +1,50 @@
+<section class="category-page">
+  <header class="page-header">
+    <div>
+      <h1>Categorias</h1>
+      <p>As categorias organizam os livros da biblioteca e facilitam a busca.</p>
+    </div>
+  </header>
+
+  <div class="alert" *ngIf="alert$ | async as alert" [class.success]="alert.type === 'success'" [class.error]="alert.type === 'error'">
+    {{ alert.message }}
+  </div>
+
+  <div class="page-content">
+    <div class="card">
+      <h2>Nova categoria</h2>
+      <app-category-form [isSubmitting]="isSubmitting" (submitCategory)="onSubmitCategory($event)"></app-category-form>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Lista de categorias</h2>
+        <span class="count" *ngIf="categories.length">{{ categories.length }}</span>
+      </div>
+
+      <div class="state" *ngIf="isLoading">Carregando categorias...</div>
+
+      <div class="state empty" *ngIf="!isLoading && categories.length === 0">
+        Nenhuma categoria cadastrada.
+      </div>
+
+      <div class="category-grid" *ngIf="!isLoading && categories.length > 0">
+        <article class="category-card" *ngFor="let category of categories">
+          <div class="category-header">
+            <h3>{{ category.name }}</h3>
+            <span class="book-count">{{ category.bookCount }} livros</span>
+          </div>
+          <p class="description" *ngIf="category.description; else noDescription">
+            {{ category.description }}
+          </p>
+          <ng-template #noDescription>
+            <p class="description muted">Sem descrição.</p>
+          </ng-template>
+          <button type="button" class="delete-button" [disabled]="deletingId === category.id" (click)="onDeleteCategory(category)">
+            {{ deletingId === category.id ? 'Excluindo...' : 'Excluir' }}
+          </button>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
