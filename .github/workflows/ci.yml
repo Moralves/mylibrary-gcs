@@ -51,6 +51,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/mylibrary-web/package-lock.json
 
+      - name: Align npm version with frontend lockfile
+        run: npm install --global npm@11.5.2
+
+      - name: Show frontend tool versions
+        run: |
+          node --version
+          npm --version
+
       - name: Install frontend dependencies
         run: npm ci --no-audit --no-fund
 
