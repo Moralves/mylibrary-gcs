@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs';
+import { BehaviorSubject, finalize, timeout, TimeoutError } from 'rxjs';
 import { Category } from '../../../core/models/category.model';
 import {
   CategoryCreatePayload,
@@ -18,12 +18,13 @@ import { CategoryFormComponent } from '../category-form/category-form.component'
 export class CategoryListComponent implements OnInit {
   @ViewChild(CategoryFormComponent) private formComponent?: CategoryFormComponent;
 
+  private readonly alertSubject = new BehaviorSubject<AlertState | null>(null);
+
   public categories: Category[] = [];
   public isLoading = false;
   public isSubmitting = false;
   public deletingId: number | null = null;
-  public alertMessage: string | null = null;
-  public alertType: 'success' | 'error' | null = null;
+  public readonly alert$ = this.alertSubject.asObservable();
 
   public constructor(private readonly categoryService: CategoryService) {}
 
@@ -37,9 +38,18 @@ export class CategoryListComponent implements OnInit {
 
     this.categoryService
       .createCategory(payload)
-      .pipe(finalize(() => (this.isSubmitting = false)))
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.isSubmitting = false;
+        })
+      )
       .subscribe({
         next: (category) => {
+          if (!category || !category.id || !category.name) {
+            this.showError('Resposta inválida ao cadastrar a categoria.');
+            return;
+          }
           this.categories = this.sortCategories([...this.categories, category]);
           this.formComponent?.resetForm();
           this.showSuccess('Categoria cadastrada com sucesso.');
@@ -63,7 +73,12 @@ export class CategoryListComponent implements OnInit {
 
     this.categoryService
       .deleteCategory(category.id)
-      .pipe(finalize(() => (this.deletingId = null)))
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.deletingId = null;
+        })
+      )
       .subscribe({
         next: () => {
           this.categories = this.categories.filter((item) => item.id !== category.id);
@@ -81,9 +96,17 @@ export class CategoryListComponent implements OnInit {
 
     this.categoryService
       .listCategories()
-      .pipe(finalize(() => (this.isLoading = false)))
+      .pipe(
+        timeout(10000),
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
       .subscribe({
-        next: (categories) => (this.categories = this.sortCategories(categories)),
+        next: (categories) => {
+          const safeCategories = Array.isArray(categories) ? categories : [];
+          this.categories = this.sortCategories(safeCategories);
+        },
         error: (error) => {
           this.showError(this.getErrorMessage(error, 'Não foi possível carregar as categorias.'));
         }
@@ -95,22 +118,27 @@ export class CategoryListComponent implements OnInit {
   }
 
   private showSuccess(message: string): void {
-    this.alertMessage = message;
-    this.alertType = 'success';
+    this.alertSubject.next({ type: 'success', message });
   }
 
   private showError(message: string): void {
-    this.alertMessage = message;
-    this.alertType = 'error';
+    this.alertSubject.next({ type: 'error', message });
   }
 
   private clearAlert(): void {
-    this.alertMessage = null;
-    this.alertType = null;
+    this.alertSubject.next(null);
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
+    if (error instanceof TimeoutError) {
+      return 'A requisição demorou mais que o esperado. Tente novamente.';
+    }
     const typedError = error as { error?: { message?: string } };
     return typedError?.error?.message ?? fallback;
   }
 }
+
+type AlertState = {
+  type: 'success' | 'error';
+  message: string;
+};

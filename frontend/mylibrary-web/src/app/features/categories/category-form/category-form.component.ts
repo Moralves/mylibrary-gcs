@@ -10,16 +10,16 @@ import {
 } from '@angular/forms';
 import { CategoryCreatePayload } from '../../../core/services/category.service';
 
-@Component({
+  @Component({
   selector: 'app-category-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './category-form.component.html',
   styleUrls: ['./category-form.component.css']
 })
-export class CategoryFormComponent {
-  @Input() public isSubmitting = false;
-  @Output() public submitCategory = new EventEmitter<CategoryCreatePayload>();
+  export class CategoryFormComponent {
+    @Input() public isSubmitting = false;
+    @Output() public submitCategory = new EventEmitter<CategoryCreatePayload>(true);
 
   public readonly form;
 

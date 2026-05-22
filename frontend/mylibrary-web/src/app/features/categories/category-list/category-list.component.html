@@ -6,8 +6,8 @@
     </div>
   </header>
 
-  <div class="alert" *ngIf="alertMessage" [class.success]="alertType === 'success'" [class.error]="alertType === 'error'">
-    {{ alertMessage }}
+  <div class="alert" *ngIf="alert$ | async as alert" [class.success]="alert.type === 'success'" [class.error]="alert.type === 'error'">
+    {{ alert.message }}
   </div>
 
   <div class="page-content">
