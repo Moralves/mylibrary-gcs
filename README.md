@@ -36,6 +36,8 @@ Funcionalidades de domínio, como categorias, livros e empréstimos, serão dese
 ### Frontend
 
 - Angular 21+
+- Node.js 22.12.0
+- npm 11.5.2
 - TypeScript 5.9
 - CSS
 - Angular Routing
@@ -92,11 +94,30 @@ Resposta esperada:
 
 ## Como executar o frontend
 
-Pré-requisito: Node.js 22 (compatível com Angular 21).
+Pré-requisitos validados para o frontend:
+
+- Node.js `22.12.0`
+- npm `11.5.2`
+
+Se o Node já estiver instalado com outra versão do npm, atualize antes de instalar as dependências:
+
+```powershell
+npm install --global npm@11.5.2
+```
 
 1. `cd frontend\mylibrary-web`
 2. `npm install`
 3. `npm start`
+
+## Boas práticas para dependências do frontend
+
+Para evitar falhas no GitHub Actions e divergências entre máquinas:
+
+- Use no frontend a mesma combinação validada no projeto: `Node.js 22.12.0` e `npm 11.5.2`.
+- Sempre que alterar dependências no `frontend/mylibrary-web/package.json`, execute `npm install` na pasta do frontend.
+- Versione junto o arquivo `frontend/mylibrary-web/package-lock.json` atualizado.
+- Não edite o `package-lock.json` manualmente.
+- O CI usa `npm ci`, então qualquer desalinhamento entre `package.json` e `package-lock.json` fará o build falhar no Pull Request.
 
 ## Estratégia de branches
 
