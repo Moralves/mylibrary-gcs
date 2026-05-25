@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.senai.mylibrary.book.dto.BookCreateRequest;
 import br.com.senai.mylibrary.book.dto.BookResponse;
+import br.com.senai.mylibrary.loan.LoanService;
+import br.com.senai.mylibrary.loan.dto.LoanResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -24,9 +26,11 @@ import jakarta.validation.Valid;
 public class BookController {
 
     private final BookService bookService;
+    private final LoanService loanService;
 
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, LoanService loanService) {
         this.bookService = bookService;
+        this.loanService = loanService;
     }
 
     @GetMapping
@@ -41,6 +45,11 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<BookResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.findById(id));
+    }
+
+    @GetMapping("/{bookId}/loans")
+    public ResponseEntity<List<LoanResponse>> listLoansByBook(@PathVariable Long bookId) {
+        return ResponseEntity.ok(loanService.listByBookId(bookId));
     }
 
     @PostMapping
