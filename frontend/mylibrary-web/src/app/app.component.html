@@ -1,6 +1,12 @@
-<main class="app-container">
-  <h1>MyLibrary</h1>
-  <p>Sistema de biblioteca pessoal em construção.</p>
-</main>
+<header class="app-header">
+  <div class="brand">MyLibrary</div>
+  <nav class="nav-links">
+    <a routerLink="/categories" routerLinkActive="active">Categorias</a>
+    <a routerLink="/books" routerLinkActive="active">Livros</a>
+    <a routerLink="/loans" routerLinkActive="active">Emprestimos</a>
+  </nav>
+</header>
 
-<router-outlet></router-outlet>
+<main class="app-container">
+  <router-outlet></router-outlet>
+</main>

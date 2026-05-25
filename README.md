@@ -1,28 +1,25 @@
 # MyLibrary
 
-Sistema fullstack de biblioteca pessoal desenvolvido com Spring Boot e Angular, organizado para evolução incremental por Issues, feature branches, Pull Requests, tags e releases.
+Sistema fullstack de biblioteca pessoal com backend Spring Boot e frontend Angular, desenvolvido com foco em Gerencia de Configuracao de Software (GCS).
 
 ## Objetivo
 
-O MyLibrary tem como objetivo permitir o gerenciamento de uma biblioteca pessoal, incluindo categorias, livros, empréstimos, devoluções, filtros, dashboard e relatório de empréstimos atrasados.
+Consolidar uma base estavel para gerenciamento de biblioteca pessoal, com rastreabilidade de requisitos, fluxo de mudancas controlado e validacao automatizada no CI.
 
-Nesta etapa inicial, o projeto contém apenas a baseline técnica necessária para iniciar o desenvolvimento profissional e rastreável das funcionalidades.
+## Funcionalidades disponiveis na v1.0.0
 
-## Escopo da baseline inicial
+- Gerenciamento de categorias (RF01).
+- Gerenciamento de livros com vinculo por categoria (RF02).
+- Busca e filtros de livros por categoria, status e texto (RF04 incorporado ao RF02).
+- Sistema de emprestimos de livros (RF03).
+- Devolucao de livros emprestados (RF03).
+- Atualizacao automatica do status do livro durante emprestimo e devolucao.
+- Interface responsiva para categorias, livros e emprestimos.
+- Pipeline CI com GitHub Actions validando backend e frontend.
 
-Esta versão inicial contempla:
+Dashboard (RF05) e relatorio de atrasados (RF06) permanecem como evolucao futura.
 
-- Estrutura base do backend Spring Boot.
-- Estrutura base do frontend Angular.
-- Endpoint de verificação da API.
-- Configuração inicial de ambiente de desenvolvimento.
-- Organização inicial de pastas.
-- Arquivo `.gitignore` profissional.
-- Documentação inicial com README e CHANGELOG.
-
-Funcionalidades de domínio, como categorias, livros e empréstimos, serão desenvolvidas posteriormente em branches específicas vinculadas às Issues do projeto.
-
-## Stack tecnológica
+## Stack tecnologica
 
 ### Backend
 
@@ -30,96 +27,128 @@ Funcionalidades de domínio, como categorias, livros e empréstimos, serão dese
 - Spring Boot 4.0.6
 - Spring Web
 - Spring Data JPA
+- Spring Validation
 - H2 Database
-- Maven
+- Maven Wrapper
 
 ### Frontend
 
-- Angular 21+
-- TypeScript 5.9
+- Angular 21.2.x
+- TypeScript 5.9.x
+- Node.js 22.12.0
+- npm 11.5.2
 - CSS
-- Angular Routing
-- Services
 
-### Gerência de Configuração de Software
+### CI e GCS
 
-- Git
+- Git + GitHub
 - GitHub Issues
-- Feature branches
-- Pull Requests
+- Feature branches e Pull Requests
 - GitHub Actions
-- Tags
-- Releases
-- CHANGELOG
+- CHANGELOG e rastreabilidade em `docs/`
 
-## Estrutura do repositório
+## Estrutura do repositorio
 
 ```text
 mylibrary-gcs/
-├── backend/
-│   └── mylibrary-api/
-├── frontend/
-│   └── mylibrary-web/
-├── docs/
-├── .gitignore
-├── README.md
-└── CHANGELOG.md
+|-- backend/
+|   `-- mylibrary-api/
+|-- frontend/
+|   `-- mylibrary-web/
+|-- docs/
+|-- .github/workflows/
+|-- CHANGELOG.md
+`-- README.md
 ```
 
 ## Como executar o backend
 
-Pré-requisito: Java 17+ instalado e `JAVA_HOME` configurado.
+Pre-requisitos:
 
-1. `cd backend\mylibrary-api`
-2. `.\mvnw.cmd clean verify`
-3. `.\mvnw.cmd spring-boot:run`
+- Java 17+
+- `JAVA_HOME` configurado
 
-## Como testar o health check
+Comandos:
 
-Endpoint: `GET http://localhost:8080/api/health`
-
-Exemplo com `curl`:
-
-```
-curl http://localhost:8080/api/health
+```powershell
+cd backend/mylibrary-api
+.\mvnw.cmd clean verify
+.\mvnw.cmd spring-boot:run
 ```
 
-Resposta esperada:
-
-```
-{"status":"UP","application":"MyLibrary API"}
-```
+API local: `http://localhost:8080/api`  
+Health check: `GET http://localhost:8080/api/health`
 
 ## Como executar o frontend
 
-Pré-requisito: Node.js 22 (compatível com Angular 21).
+Pre-requisitos:
 
-1. `cd frontend\mylibrary-web`
-2. `npm install`
-3. `npm start`
+- Node.js `22.12.0`
+- npm `11.5.2`
 
-## Estratégia de branches
+Comandos:
 
-- `main`: versão estável do projeto.
-- `develop`: integração das funcionalidades.
-- `feature/*`: desenvolvimento de requisitos.
-- `release/*`: preparação de versões.
-- `hotfix/*`: correções emergenciais.
+```powershell
+cd frontend/mylibrary-web
+npm ci
+npm start
+```
 
-## Fluxo profissional de desenvolvimento
+Aplicacao local: `http://localhost:4200`
 
-1. Criar Issue com escopo e critérios claros.
-2. Criar branch a partir de `develop`.
-3. Implementar a funcionalidade com commits atômicos.
-4. Abrir Pull Request para revisão.
-5. Revisar e aprovar conforme checklist do projeto.
-6. Fazer merge em `develop`.
-7. Preparar release, criar tag e publicar release em `main`.
+## Resumo da API
 
-## Versionamento planejado
+### Categorias
 
-O projeto seguirá versionamento semântico (SemVer), com tags e releases rastreáveis no CHANGELOG.
+- `GET /api/categories`
+- `POST /api/categories`
+- `DELETE /api/categories/{id}`
 
-## Status do projeto
+### Livros
 
-Baseline inicial configurada e pronta para evolução do sistema.
+- `GET /api/books`
+- `GET /api/books/{id}`
+- `GET /api/books/{bookId}/loans`
+- `POST /api/books`
+- `DELETE /api/books/{id}`
+
+Filtros na listagem de livros:
+
+- `categoryId`
+- `status` (`AVAILABLE` ou `BORROWED`)
+- `search` (titulo/autor)
+
+### Emprestimos
+
+- `GET /api/loans`
+- `GET /api/loans/active`
+- `POST /api/loans`
+- `POST /api/loans/{id}/return`
+
+## Estrategia de branches
+
+- `main`: versoes estaveis.
+- `develop`: branch de integracao.
+- `feature/*`: desenvolvimento por requisito.
+- `release/*`: preparacao de release.
+- `hotfix/*`: correcao emergencial apos release.
+
+## Fluxo de GCS aplicado
+
+1. Requisito registrado em Issue.
+2. Implementacao em `feature/*` a partir de `develop`.
+3. Validacao automatica no GitHub Actions.
+4. Revisao e merge via Pull Request em `develop`.
+5. Consolidacao em `release/*` para preparacao da versao.
+6. Publicacao com tag semantica e atualizacao de rastreabilidade.
+
+## Versionamento
+
+O projeto adota SemVer:
+
+- `v0.1.0`: baseline inicial.
+- `v1.0.0`: primeira entrega estavel com RF01, RF02/RF04 e RF03.
+
+## Status da versao atual
+
+Release `v1.0.0` em preparacao na branch `release/v1.0.0`, com funcionalidades obrigatorias concluidas e pipeline CI ativo.

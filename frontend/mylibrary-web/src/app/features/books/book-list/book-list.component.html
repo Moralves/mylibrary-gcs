@@ -1,0 +1,112 @@
+<section class="book-page">
+  <header class="page-header">
+    <div>
+      <h1>Livros</h1>
+      <p>Gerencie os livros da sua biblioteca com filtros por categoria, status e texto.</p>
+    </div>
+  </header>
+
+  <div
+    class="alert"
+    *ngIf="alert$ | async as alert"
+    [class.success]="alert.type === 'success'"
+    [class.error]="alert.type === 'error'"
+  >
+    {{ alert.message }}
+  </div>
+
+  <div class="page-content">
+    <div class="card">
+      <h2>Novo livro</h2>
+
+      <div class="state" *ngIf="isLoadingCategories">Carregando categorias...</div>
+
+      <app-book-form
+        *ngIf="!isLoadingCategories"
+        [categories]="categories"
+        [isSubmitting]="isSubmitting"
+        [isCategoriesLoading]="isLoadingCategories"
+        (submitBook)="onSubmitBook($event)"
+      ></app-book-form>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Lista de livros</h2>
+        <span class="count" *ngIf="books.length">{{ books.length }}</span>
+      </div>
+
+      <form class="filters" [formGroup]="filtersForm" (ngSubmit)="onApplyFilters()">
+        <div class="filter-field">
+          <label for="filter-category">Categoria</label>
+          <select id="filter-category" formControlName="categoryId">
+            <option value="">Todas</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="filter-status">Status</label>
+          <select id="filter-status" formControlName="status">
+            <option value="">Todos</option>
+            <option *ngFor="let option of statusOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-field search-field">
+          <label for="filter-search">Busca</label>
+          <input
+            id="filter-search"
+            type="text"
+            formControlName="search"
+            placeholder="Buscar por título ou autor"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="filter-actions">
+          <button type="submit" class="filter-button" [disabled]="isLoadingBooks">Filtrar</button>
+          <button type="button" class="clear-button" [disabled]="isLoadingBooks" (click)="onClearFilters()">
+            Limpar filtros
+          </button>
+        </div>
+      </form>
+
+      <div class="state" *ngIf="isLoadingBooks">Carregando livros...</div>
+
+      <div class="state empty" *ngIf="!isLoadingBooks && books.length === 0">
+        Nenhum livro encontrado com os filtros informados.
+      </div>
+
+      <div class="book-grid" *ngIf="!isLoadingBooks && books.length > 0">
+        <article class="book-card" *ngFor="let book of books">
+          <div class="book-card-header">
+            <h3>{{ book.title }}</h3>
+            <span class="status-badge" [class.available]="book.status === 'AVAILABLE'" [class.borrowed]="book.status === 'BORROWED'">
+              {{ book.statusLabel }}
+            </span>
+          </div>
+
+          <p class="meta"><strong>Autor:</strong> {{ book.author }}</p>
+          <p class="meta"><strong>Categoria:</strong> {{ book.categoryName }}</p>
+          <p class="meta"><strong>ISBN:</strong> {{ book.isbn || 'Não informado' }}</p>
+          <p class="meta"><strong>Ano:</strong> {{ book.publicationYear || 'Não informado' }}</p>
+
+          <button
+            type="button"
+            class="delete-button"
+            [class.disabled-borrowed]="book.status === 'BORROWED'"
+            [disabled]="isDeleteDisabled(book)"
+            (click)="onDeleteBook(book)"
+          >
+            {{ getDeleteButtonLabel(book) }}
+          </button>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
