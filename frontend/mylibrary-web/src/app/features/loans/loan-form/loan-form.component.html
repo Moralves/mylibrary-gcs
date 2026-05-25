@@ -1,0 +1,74 @@
+<form class="loan-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-field">
+    <label for="loan-book">Livro</label>
+    <select id="loan-book" formControlName="bookId" [class.invalid]="isFieldInvalid('bookId')">
+      <option [ngValue]="null">Selecione um livro disponivel</option>
+      <option *ngFor="let book of books" [ngValue]="book.id">
+        {{ book.title }} - {{ book.author }}
+      </option>
+    </select>
+    <span class="error" *ngIf="isFieldInvalid('bookId')">O livro e obrigatorio.</span>
+    <span class="hint" *ngIf="!isBooksLoading && books.length === 0">
+      Nao ha livros disponiveis para emprestimo neste momento.
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="loan-person-name">Nome da pessoa</label>
+    <input
+      id="loan-person-name"
+      type="text"
+      formControlName="personName"
+      placeholder="Ex: Joao Silva"
+      [class.invalid]="isFieldInvalid('personName')"
+      autocomplete="off"
+    />
+    <span class="error" *ngIf="isFieldInvalid('personName')">
+      <span *ngIf="form.get('personName')?.hasError('required')">O nome da pessoa e obrigatorio.</span>
+      <span *ngIf="form.get('personName')?.hasError('whitespace')">
+        O nome da pessoa nao pode ser apenas espacos.
+      </span>
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="loan-person-phone">Telefone</label>
+    <input
+      id="loan-person-phone"
+      type="text"
+      formControlName="personPhone"
+      placeholder="Ex: (62) 99999-9999"
+      [class.invalid]="isFieldInvalid('personPhone')"
+      autocomplete="off"
+    />
+    <span class="error" *ngIf="isFieldInvalid('personPhone')">
+      <span *ngIf="form.get('personPhone')?.hasError('required')">O telefone e obrigatorio.</span>
+      <span *ngIf="form.get('personPhone')?.hasError('whitespace')">
+        O telefone nao pode ser apenas espacos.
+      </span>
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="loan-expected-return-date">Data prevista de devolucao</label>
+    <input
+      id="loan-expected-return-date"
+      type="date"
+      formControlName="expectedReturnDate"
+      [attr.min]="getMinExpectedReturnDate()"
+      [class.invalid]="isFieldInvalid('expectedReturnDate')"
+    />
+    <span class="error" *ngIf="isFieldInvalid('expectedReturnDate')">
+      <span *ngIf="form.get('expectedReturnDate')?.hasError('required')">
+        A data prevista de devolucao e obrigatoria.
+      </span>
+      <span *ngIf="form.get('expectedReturnDate')?.hasError('beforeLoanDate')">
+        A data prevista de devolucao nao pode ser anterior a hoje.
+      </span>
+    </span>
+  </div>
+
+  <button type="submit" [disabled]="form.invalid || isSubmitting || isBooksLoading || books.length === 0">
+    {{ isSubmitting ? 'Registrando emprestimo...' : 'Emprestar livro' }}
+  </button>
+</form>

@@ -19,6 +19,7 @@
 .nav-links {
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .nav-links a {

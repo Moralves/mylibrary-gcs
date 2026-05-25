@@ -1,0 +1,106 @@
+<section class="loan-page">
+  <header class="page-header">
+    <div>
+      <h1>Emprestimos</h1>
+      <p>Registre emprestimos e devolucoes com atualizacao automatica de status dos livros.</p>
+    </div>
+  </header>
+
+  <div
+    class="alert"
+    *ngIf="alert$ | async as alert"
+    [class.success]="alert.type === 'success'"
+    [class.error]="alert.type === 'error'"
+  >
+    {{ alert.message }}
+  </div>
+
+  <div class="page-content">
+    <div class="card">
+      <h2>Novo emprestimo</h2>
+
+      <div class="state" *ngIf="isLoadingBooks">Carregando livros disponiveis...</div>
+
+      <app-loan-form
+        *ngIf="!isLoadingBooks"
+        [books]="availableBooks"
+        [isSubmitting]="isSubmitting"
+        [isBooksLoading]="isLoadingBooks"
+        (submitLoan)="onSubmitLoan($event)"
+      ></app-loan-form>
+    </div>
+
+    <div class="lists-column">
+      <div class="card">
+        <div class="card-header">
+          <h2>Emprestimos ativos</h2>
+          <span class="count" *ngIf="activeLoans.length">{{ activeLoans.length }}</span>
+        </div>
+
+        <div class="state" *ngIf="isLoadingActiveLoans">Carregando emprestimos ativos...</div>
+
+        <div class="state empty" *ngIf="!isLoadingActiveLoans && activeLoans.length === 0">
+          Nenhum emprestimo ativo no momento.
+        </div>
+
+        <div class="loan-grid" *ngIf="!isLoadingActiveLoans && activeLoans.length > 0">
+          <article class="loan-card" *ngFor="let loan of activeLoans" [class.overdue]="isLoanOverdue(loan)">
+            <div class="loan-card-header">
+              <h3>{{ loan.bookTitle }}</h3>
+              <span class="status-badge borrowed">{{ loan.bookStatusLabel }}</span>
+            </div>
+
+            <p class="meta"><strong>Pessoa:</strong> {{ loan.personName }}</p>
+            <p class="meta"><strong>Telefone:</strong> {{ loan.personPhone }}</p>
+            <p class="meta"><strong>Data do emprestimo:</strong> {{ loan.loanDate | date: 'dd/MM/yyyy' }}</p>
+            <p class="meta">
+              <strong>Previsto para devolucao:</strong> {{ loan.expectedReturnDate | date: 'dd/MM/yyyy' }}
+            </p>
+            <p class="meta overdue-text" *ngIf="isLoanOverdue(loan)">Emprestimo em atraso.</p>
+
+            <button
+              type="button"
+              class="return-button"
+              [disabled]="isReturnDisabled(loan)"
+              (click)="onReturnLoan(loan)"
+            >
+              {{ getReturnButtonLabel(loan) }}
+            </button>
+          </article>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Historico de emprestimos</h2>
+          <span class="count" *ngIf="loans.length">{{ loans.length }}</span>
+        </div>
+
+        <div class="state" *ngIf="isLoadingLoans">Carregando historico...</div>
+
+        <div class="state empty" *ngIf="!isLoadingLoans && loans.length === 0">
+          Nenhum emprestimo registrado.
+        </div>
+
+        <div class="history-list" *ngIf="!isLoadingLoans && loans.length > 0">
+          <article class="history-item" *ngFor="let loan of loans">
+            <div class="history-header">
+              <h3>{{ loan.bookTitle }}</h3>
+              <span class="status-badge" [class.borrowed]="loan.active" [class.available]="!loan.active">
+                {{ loan.active ? 'Ativo' : 'Devolvido' }}
+              </span>
+            </div>
+
+            <p class="meta"><strong>Pessoa:</strong> {{ loan.personName }}</p>
+            <p class="meta"><strong>Telefone:</strong> {{ loan.personPhone }}</p>
+            <p class="meta"><strong>Emprestimo:</strong> {{ loan.loanDate | date: 'dd/MM/yyyy' }}</p>
+            <p class="meta"><strong>Previsto:</strong> {{ loan.expectedReturnDate | date: 'dd/MM/yyyy' }}</p>
+            <p class="meta" *ngIf="loan.actualReturnDate">
+              <strong>Devolucao:</strong> {{ loan.actualReturnDate | date: 'dd/MM/yyyy' }}
+            </p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
