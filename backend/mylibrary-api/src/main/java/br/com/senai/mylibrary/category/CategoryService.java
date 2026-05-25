@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.senai.mylibrary.book.BookRepository;
 import br.com.senai.mylibrary.category.dto.CategoryCreateRequest;
 import br.com.senai.mylibrary.category.dto.CategoryResponse;
 import br.com.senai.mylibrary.shared.exception.BusinessException;
@@ -15,9 +16,11 @@ import br.com.senai.mylibrary.shared.exception.ResourceNotFoundException;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final BookRepository bookRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, BookRepository bookRepository) {
         this.categoryRepository = categoryRepository;
+        this.bookRepository = bookRepository;
     }
 
     @Transactional(readOnly = true)
@@ -76,7 +79,7 @@ public class CategoryService {
     }
 
     private boolean hasLinkedBooks(Long categoryId) {
-        return false;
+        return bookRepository.existsByCategoryId(categoryId);
     }
 
     private CategoryResponse toResponse(Category category) {
@@ -89,6 +92,6 @@ public class CategoryService {
     }
 
     private long resolveBookCount(Category category) {
-        return 0L;
+        return bookRepository.countByCategoryId(category.getId());
     }
 }

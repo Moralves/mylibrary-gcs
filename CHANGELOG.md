@@ -6,6 +6,18 @@ Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
 
 ### Added
 
+- RF02: CRUD de livros com vínculo obrigatório a categorias (#2).
+- Endpoints REST de livros:
+  - `GET /api/books`
+  - `GET /api/books/{id}`
+  - `POST /api/books`
+  - `DELETE /api/books/{id}`
+- Filtros combináveis na listagem de livros por categoria, status e texto (título/autor).
+- Regra de negócio para impedir exclusão de livros emprestados.
+- Regra de negócio para impedir exclusão de categorias com livros vinculados.
+- Contagem real de livros por categoria na API de categorias.
+- Interface responsiva para gerenciamento de livros no frontend Angular.
+- Navegação principal e rota de Livros no frontend.
 - RF01: CRUD de categorias com backend Spring Boot e frontend Angular (#1).
 - Endpoints REST de categorias:
   - `GET /api/categories`
@@ -27,7 +39,7 @@ Todas as mudanças relevantes deste projeto serão documentadas neste arquivo.
 
 - Branch `develop` passou a concentrar funcionalidades validadas por Pull Request.
 - Fluxo de Pull Requests passou a ser validado com GitHub Actions antes do merge.
-- RF04 Busca e Filtros será tratado dentro da implementação de RF02 CRUD Livros.
+- RF04 Busca e Filtros foi incorporado dentro da implementação de RF02 CRUD Livros.
 - Atualização do frontend para Angular 21 e TypeScript 5.9, compatível com Node.js 22.
 - Atualização das instruções de execução do backend no README.
 
