@@ -1,0 +1,74 @@
+<form class="book-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="form-field">
+    <label for="book-title">Título</label>
+    <input
+      id="book-title"
+      type="text"
+      formControlName="title"
+      placeholder="Ex: O Hobbit"
+      [class.invalid]="isFieldInvalid('title')"
+      autocomplete="off"
+    />
+    <span class="error" *ngIf="isFieldInvalid('title')">
+      <span *ngIf="form.get('title')?.hasError('required')">O título é obrigatório.</span>
+      <span *ngIf="form.get('title')?.hasError('whitespace')">O título não pode ser apenas espaços.</span>
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="book-author">Autor</label>
+    <input
+      id="book-author"
+      type="text"
+      formControlName="author"
+      placeholder="Ex: J. R. R. Tolkien"
+      [class.invalid]="isFieldInvalid('author')"
+      autocomplete="off"
+    />
+    <span class="error" *ngIf="isFieldInvalid('author')">
+      <span *ngIf="form.get('author')?.hasError('required')">O autor é obrigatório.</span>
+      <span *ngIf="form.get('author')?.hasError('whitespace')">O autor não pode ser apenas espaços.</span>
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="book-isbn">ISBN</label>
+    <input id="book-isbn" type="text" formControlName="isbn" placeholder="Opcional" autocomplete="off" />
+  </div>
+
+  <div class="form-field">
+    <label for="book-year">Ano de publicação</label>
+    <input
+      id="book-year"
+      type="number"
+      formControlName="publicationYear"
+      placeholder="Opcional"
+      [attr.max]="getCurrentYear()"
+      [class.invalid]="isFieldInvalid('publicationYear')"
+    />
+    <span class="error" *ngIf="isFieldInvalid('publicationYear')">
+      <span *ngIf="form.get('publicationYear')?.hasError('maxYear')">
+        O ano de publicação não pode ser maior que {{ getCurrentYear() }}.
+      </span>
+      <span *ngIf="form.get('publicationYear')?.hasError('invalidNumber')">Informe um ano válido.</span>
+    </span>
+  </div>
+
+  <div class="form-field">
+    <label for="book-category">Categoria</label>
+    <select id="book-category" formControlName="categoryId" [class.invalid]="isFieldInvalid('categoryId')">
+      <option [ngValue]="null">Selecione uma categoria</option>
+      <option *ngFor="let category of categories" [ngValue]="category.id">
+        {{ category.name }}
+      </option>
+    </select>
+    <span class="error" *ngIf="isFieldInvalid('categoryId')">A categoria é obrigatória.</span>
+    <span class="hint" *ngIf="!isCategoriesLoading && categories.length === 0">
+      Cadastre uma categoria antes de criar livros.
+    </span>
+  </div>
+
+  <button type="submit" [disabled]="form.invalid || isSubmitting || isCategoriesLoading || categories.length === 0">
+    {{ isSubmitting ? 'Cadastrando...' : 'Cadastrar' }}
+  </button>
+</form>
